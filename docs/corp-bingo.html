@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Corporate Bingo Card</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+<style type="text/css">
+body {
+    font-family:Verdana,arial,helvetica,sans-serif;
+}
+.left {
+    float:left;
+}
+.right {
+    float:right;
+}
+.clear {
+    clear:both;
+}
+.title {
+    text-align:center;
+    color:darkblue;
+}
+.bingo {
+    border:4px solid royalblue;
+    border-collapse:collapse;
+    font-size:18px;
+    margin:auto;
+}
+.bingo td {
+    width:130px;
+    height:80px;
+    border:2px solid darkorange;
+    padding:4px;
+    text-align:center;
+}
+.header {
+    color:white;
+    background-color:royalblue;
+    font-weight:bold;
+    height:1em;
+    font-size:2em;
+}
+.freecell {
+    font-weight:bold;
+    text-shadow:1px 1px 3px white, -1px -1px 3px white;
+    background-image:url('http://www.usfirst.org/sites/all/themes/first_core/logo.png');
+    background-repeat:no-repeat;
+}
+
+@media print {
+    hr {page-break-before:always;}
+}
+</style>
+
+<script type="text/javascript">
+window.onload = function() { insertFirstBingoCard(); }
+
+var buzzwords = [
+"Accelerate",
+"Access",
+"Advocate",
+"Align",
+"Business model",
+"Centering",
+"Challenge",
+"Collaborative",
+"Community",
+"Context",
+"Dialog",
+"Dignity",
+"Disrupt",
+"Engagement",
+"Experience",
+"Focus",
+"Galvanize",
+"Illuminate",
+"Impact",
+"Inclusive",
+"Innovative",
+"Integrated",
+"Interdependent",
+"Invest",
+"Journey",
+"Leadership",
+"Lens",
+"Leverage",
+"Mission",
+"Mobilize",
+"Narrative",
+"Partnership",
+"Perspective",
+"Potential",
+"Recommit",
+"Reframe",
+"Resources",
+"Restructure",
+"Revitalize",
+"Robust",
+"Stakeholder",
+"Stewardship",
+"Strategy",
+"Structural",
+"Sustainable",
+"Systemic",
+"Targeted",
+"Transformation",
+"Transition",
+"Uplift",
+"Urgent",
+"Values",
+"Vision"
+];
+
+function permuteList(list) {
+    for (var i = 1; i < list.length; i++){
+        var j = Math.floor(Math.random() * i);
+        if (i != j) {var swap = list[i]; list[i] = list[j]; list[j] = swap;}
+    }
+}
+
+function toggleCellBackground() {
+    if (this.style.backgroundColor) {
+        this.style.backgroundColor = '';
+        this.style.backgroundPosition = '0px 0px';
+    } else {
+        this.style.backgroundColor = '#999999';
+        this.style.backgroundPosition = '1000px 1000px';
+    }
+}
+
+function generateBingoCard() {
+    var row = [];
+    var cell = [];
+    var num_rows = 5;
+    var midway = Math.floor(num_rows / 2);
+
+    permuteList(buzzwords);
+    var terms = buzzwords.slice(0, 24);
+
+    var tab = document.createElement('table');
+    tab.setAttribute('class', 'bingo');
+    var tbo = document.createElement('tbody');
+
+    var headerRow = document.createElement('tr');
+    headerRow.setAttribute('class', 'header');
+    var bingo = 'BINGO';
+    var index = 0;
+    for (index = 0; index < bingo.length; index++) {
+        var hdrCell = document.createElement('td');
+        var node = document.createTextNode(bingo.charAt(index));
+        hdrCell.appendChild(node);
+        headerRow.appendChild(hdrCell);
+    }
+    tbo.appendChild(headerRow);
+
+    index = 0;
+    for (var c = 0; c < num_rows; c++){
+        row[c] = document.createElement('tr');
+        for (k = 0; k < num_rows; k++) {
+            cell[k] = document.createElement('td');
+            var term = '';
+            if (c == midway && k == midway) {
+                term = 'FREE'; // the free cell
+                cell[k].setAttribute('class', 'freecell');
+            } else {
+                term = terms[index++];
+            }
+            var node = document.createTextNode(term);
+            cell[k].appendChild(node);
+            cell[k].onclick = toggleCellBackground;
+            row[c].appendChild(cell[k]);
+        }
+        tbo.appendChild(row[c]);
+    }
+    tab.appendChild(tbo);
+    return tab;
+}
+
+function insertFirstBingoCard() {
+    var firstcard = generateBingoCard();
+    var site = document.getElementById('first_card');
+    site.innerHTML = '';
+    site.appendChild(firstcard);
+
+    // pastehtml.com shows the bingo page in an iframe which breaks printing
+    // in most browsers -- but not Safari.
+    if (document.location.host != 'pastehtml.com') {
+        var note = document.getElementById('pastehtml_note');
+        note.innerHTML = '';
+    }
+}
+
+function appendAnotherBingoCard() {
+    var hr = document.createElement('hr');
+    document.getElementById('more_cards').appendChild(hr);
+    document.getElementById('more_cards').appendChild(generateBingoCard());
+}
+
+</script>
+
+<body>
+
+<h1 class="title">Corporate Bingo Card</h1>
+
+<div class="clear"></div>
+<form>
+    <button type="button" onClick="insertFirstBingoCard()">Roll again</button>
+    <button type="button" onClick="appendAnotherBingoCard()">Add another card</button>
+</form><br/>
+
+<div class="left">
+<div id="first_card"></div>
+<p id="pastehtml_note">pastehtml.com problems?</p>
+</div>
+
+<div class="clear"></div>
+<div id="more_cards"></div>
+
+</body>
+</html>
