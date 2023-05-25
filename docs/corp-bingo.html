@@ -57,86 +57,122 @@ body {
 <script type="text/javascript">
 window.onload = function() { insertFirstBingoCard(); }
 
-var buzzwords = [
-"360-degree feedback",
-"Accelerate",
-"Access",
-"Advocate",
-"Agile methodology",
-"Align",
-"Best practices",
-"Business model",
-"Catalyze",
-"Centering",
-"Challenge",
-"Change management",
-"Collaborative",
-"Community",
-"Context",
-"Continuous improvement",
-"Cross-functional teams",
-"Dialog",
-"Dignity",
-"Disrupt",
-"Empowerment",
-"Engagement",
-"Experience",
-"Focus",
-"Galvanize",
-"Game-changer",
-"Illuminate",
-"Impact",
-"Inclusive",
-"Innovative",
-"Integrated",
-"Interdependent",
-"Invest",
-"Journey",
-"Leadership",
-"Lean management",
-"Lens",
-"Leverage",
-"Mission",
-"Mobilize",
-"Narrative",
-"Out-of-the-box thinking",
-"Paradigm",
-"Partnership",
-"Perspective",
-"Potential",
-"Recommit",
-"Refocus",
-"Reframe",
-"Resources",
-"Restructure",
-"Revitalize",
-"Right-size",
-"Robust",
-"Scalability",
-"Sharpen",
-"Stakeholder",
-"Stewardship",
-"Strategy",
-"Structural",
-"Sustainable",
-"Synergy",
-"Systemic",
-"Targeted",
-"Transformation",
-"Transition",
-"Transparent",
-"Uplift",
-"Upshift",
-"Urgent",
-"Values",
-"Vision"
+const buzzwords = [
+    {word: "360-degree", weight: 1},
+    {word: "Accelerate", weight: 1},
+    {word: "Access", weight: 1},
+    {word: "Advocate", weight: 1},
+    {word: "Agile", weight: 3},
+    {word: "Align", weight: 10},
+    {word: "Best practices", weight: 1},
+    {word: "Business model", weight: 8},
+    {word: "Catalyze", weight: 1},
+    {word: "Centering", weight: 2},
+    {word: "Challenge", weight: 5},
+    {word: "Change management", weight: 1},
+    {word: "Collaborative", weight: 4},
+    {word: "Community", weight: 1},
+    {word: "Context", weight: 4},
+    {word: "Continuous improvement", weight: 2},
+    {word: "Cross-functional", weight: 2},
+    {word: "Dialog", weight: 1},
+    {word: "Dignity", weight: 1},
+    {word: "Disrupt", weight: 4},
+    {word: "Empower", weight: 2},
+    {word: "Engagement", weight: 2},
+    {word: "Experience", weight: 3},
+    {word: "Focus", weight: 6},
+    {word: "Galvanize", weight: 1},
+    {word: "Game-changer", weight: 3},
+    {word: "Illuminate", weight: 1},
+    {word: "Impact", weight: 5},
+    {word: "Inclusive", weight: 2},
+    {word: "Innovative", weight: 4},
+    {word: "Integrated", weight: 3},
+    {word: "Interdependent", weight: 2},
+    {word: "Invest", weight: 5},
+    {word: "Journey", weight: 1},
+    {word: "Leadership", weight: 6},
+    {word: "Lean management", weight: 1},
+    {word: "Lens", weight: 5},
+    {word: "Leverage", weight: 6},
+    {word: "Mission", weight: 7},
+    {word: "Mobilize", weight: 1},
+    {word: "Narrative", weight: 1},
+    {word: "Out-of-the-box", weight: 1},
+    {word: "Paradigm", weight: 3},
+    {word: "Partnership", weight: 2},
+    {word: "Perspective", weight: 2},
+    {word: "Potential", weight: 3},
+    {word: "Recommit", weight: 3},
+    {word: "Refocus", weight: 4},
+    {word: "Reframe", weight: 2},
+    {word: "Resources", weight: 4},
+    {word: "Restructure", weight: 3},
+    {word: "Revitalize", weight: 2},
+    {word: "Right-size", weight: 1},
+    {word: "Robust", weight: 2},
+    {word: "Scalable", weight: 3},
+    {word: "Sharpen", weight: 1},
+    {word: "Stakeholder", weight: 2},
+    {word: "Stewardship", weight: 1},
+    {word: "Strategy", weight: 6},
+    {word: "Structural", weight: 3},
+    {word: "Sustainable", weight: 3},
+    {word: "Synergy", weight: 3},
+    {word: "Systemic", weight: 2},
+    {word: "Targeted", weight: 1},
+    {word: "Transformation", weight: 2},
+    {word: "Transition", weight: 3},
+    {word: "Transparent", weight: 4},
+    {word: "Uplift", weight: 1},
+    {word: "Upshift", weight: 1},
+    {word: "Urgent", weight: 2},
+    {word: "Values", weight: 4},
+    {word: "Vision", weight: 3},
 ];
 
 function permuteList(list) {
-    for (var i = 1; i < list.length; i++){
+    for (var i = 1; i < list.length; i++) {
         var j = Math.floor(Math.random() * i);
-        if (i != j) {var swap = list[i]; list[i] = list[j]; list[j] = swap;}
+        var swap = list[i];
+        list[i] = list[j];
+        list[j] = swap;
     }
+}
+
+// Permute k words from the wordList with weights.
+function permuteWeightedList(wordsWithWeights, k) {
+    if (k > wordsWithWeights.length) {
+        throw new Error("Invalid input: k cannot be greater than the number of words");
+    }
+
+    const entries = [...wordsWithWeights]; // copy to remove picked entries from
+    let totalWeight = 0;
+    const pickedWords = [];
+
+    for (let entry of entries) {
+        totalWeight += entry.weight; // total weight of the present entries
+    }
+
+    while (pickedWords.length < k) {
+        const weightedRandom = Math.random() * totalWeight;
+        let cumWeight = 0;
+
+        for (let j = 0; j < entries.length; ++j) {
+            let entry = entries[j];
+            cumWeight += entry.weight;
+            if (weightedRandom < cumWeight) { // pick this entry and splice it out
+                let position = Math.floor(Math.random() * (pickedWords.length + 1));
+                pickedWords.splice(position, 0, entry.word); // insert at a random position
+                entries.splice(j, 1);
+                totalWeight -= entry.weight;
+                break;
+            }
+        }
+    }
+
+    return pickedWords;
 }
 
 function toggleCellBackground() {
@@ -155,8 +191,7 @@ function generateBingoCard() {
     var num_rows = 5;
     var midway = Math.floor(num_rows / 2);
 
-    permuteList(buzzwords);
-    var terms = buzzwords.slice(0, 24);
+    let terms = permuteWeightedList(buzzwords, 24);
 
     var tab = document.createElement('table');
     tab.setAttribute('class', 'bingo');
